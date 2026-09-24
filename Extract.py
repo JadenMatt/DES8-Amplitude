@@ -6,19 +6,48 @@ import json
 from datetime import datetime
 import logging
 import boto3
-import dotenv
+from dotenv import load_dotenv
 
 # Define Variables
 
-starttime = '20260924T00'
-endtime = '20260924T23'
-URL = f'https://amplitude.com/api/2/export?start={starttime}&end={endtime} HTTP/1.1'
+# Load in .env file for API keys
+
+load_dotenv()
 
 amp_api_key = os.getenv('AMP_API_KEY')
 amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
-deng_aws_access_key = os.getenv('DENG_AWS_ACCESS_KEY')
-deng_aws_secret_key = os.getenv('DENG_AWS_SECRET_KEY')
+starttime = '20260922T00'
+endtime = '20260922T05'
+
+url = 'https://analytics.eu.amplitude.com/api/2/export'
+
+params = {
+        'start': starttime,
+        'end': endtime
+}
 
 
+response = requests.get(url, params=params, auth=(amp_api_key, amp_secret_key))
+print (response.status_code)
+
+
+# Local data folder and filename
+
+data_dir= 'data'
+os.makedirs(data_dir, exist_ok=True)
+
+timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
+filename = f'{data_dir}/{timestamp}.json' 
+
+
+# Retry Variables
+
+max_retry  = 5
+attempt = 0
+delay = 10
+
+# While loop for API call error handling
+
+While attempt < max_retry:
 
