@@ -3,10 +3,10 @@
 import requests
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import boto3
-from dotenv import load_dotenv, time_delta
+from dotenv import load_dotenv
 import zipfile
 import gzip
 
@@ -21,7 +21,7 @@ amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
 # Calling previous day
 
-Previous_Day = datetime.now() - time_delta(days=1)
+Previous_Day = datetime.now() - timedelta(days=1)
 
 starttime = Previous_Day.strftime('%Y%m%dT00')
 endtime = Previous_Day.strftime('%Y%m%dT23')
@@ -37,6 +37,12 @@ params = {
 
 data_dir= 'data'
 os.makedirs(data_dir, exist_ok=True)
+
+temp_dir= 'data/temp_dir'
+os.makedirs(temp_dir, exist_ok=True)
+
+json_dir= 'data/JSON_data'
+os.makedirs(json_dir, exist_ok=True)
 
 
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
@@ -83,6 +89,8 @@ try:
         logger.info("Saving data")
         with open(filename, 'wb') as file:
             file.write(data)
+        with zipfile.ZipFile(filename, "r") as zip_ref:
+            zip_ref.extractall(temp_dir)
         logger.info("Data Saved, W code")
     elif response.status_code == 400:
         print('File size to large, shorten time range and try again! :(')
