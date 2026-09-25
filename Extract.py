@@ -6,7 +6,9 @@ import json
 from datetime import datetime
 import logging
 import boto3
-from dotenv import load_dotenv
+from dotenv import load_dotenv, time_delta
+import zipfile
+import gzip
 
 # Define Variables
 
@@ -17,8 +19,12 @@ load_dotenv()
 amp_api_key = os.getenv('AMP_API_KEY')
 amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
-starttime = '20260922T00'
-endtime = '20260922T05'
+# Calling previous day
+
+Previous_Day = datetime.now() - time_delta(days=1)
+
+starttime = Previous_Day.strftime('%Y%m%dT00')
+endtime = Previous_Day.strftime('%Y%m%dT23')
 
 url = 'https://analytics.eu.amplitude.com/api/2/export'
 
@@ -32,14 +38,15 @@ params = {
 data_dir= 'data'
 os.makedirs(data_dir, exist_ok=True)
 
+
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
-filename = f'{data_dir}/{timestamp}' 
+filename = f'{data_dir}/{timestamp}.zip' 
 
 #Create log folder
 
 log_dir = 'log'
 os.makedirs(log_dir, exist_ok = True)
-log_filename = f'{log_dir}/{timestamp}.json'
+log_filename = f'{log_dir}/{timestamp}.log'
 
 #Configure logging messages
 
@@ -68,7 +75,6 @@ try:
     #API Call and status response
 
     response = requests.get(url, params=params, auth=(amp_api_key, amp_secret_key))
-    print (response.status_code)
 
     if response.status_code == 200: 
         data = response.content
