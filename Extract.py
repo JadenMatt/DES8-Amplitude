@@ -9,6 +9,7 @@ import boto3
 from dotenv import load_dotenv
 import zipfile
 import gzip
+import shutil
 
 # Define Variables
 
@@ -87,10 +88,22 @@ try:
         print('Data retrieved successfully! :)')
         logger.info("Data retrieved successfully")
         logger.info("Saving data")
-        with open(filename, 'wb') as file:
-            file.write(data)
-        with zipfile.ZipFile(filename, "r") as zip_ref:
-            zip_ref.extractall(temp_dir)
+
+# Open gzip files inside extracted folder (handles nested sub-folders)
+        for root, dirs, files in os.walk(temp_dir):
+            for file_name in files:
+                if file_name.endswith('.gz'):
+                    # Full path to the compressed file inside root
+                    gz_file_paths = os.path.join(root, file_name)
+                    
+                    # Strip .gz extension for output file
+                    json_file_name = file_name[:-3]
+                    JSON_output_file_path = os.path.join(json_dir, json_file_name)
+
+                    with gzip.open(gz_file_paths, 'rb') as f_in:
+                        with open(JSON_output_file_path, 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+
         logger.info("Data Saved, W code")
     elif response.status_code == 400:
         print('File size to large, shorten time range and try again! :(')
@@ -111,3 +124,4 @@ except requests.exceptions.RequestException as e:
     print(f"Request failed: {e}")
 
 logger.info("Process Finished")
+
