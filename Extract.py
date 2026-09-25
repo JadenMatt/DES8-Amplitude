@@ -33,7 +33,7 @@ data_dir= 'data'
 os.makedirs(data_dir, exist_ok=True)
 
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
-filename = f'{data_dir}/{timestamp}.json' 
+filename = f'{data_dir}/{timestamp}' 
 
 #Create log folder
 
