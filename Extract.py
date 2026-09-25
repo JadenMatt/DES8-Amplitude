@@ -35,14 +35,34 @@ os.makedirs(data_dir, exist_ok=True)
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
 filename = f'{data_dir}/{timestamp}.json' 
 
-# Retry Variables
+#Create log folder
 
-max_retry  = 5
-attempt = 0
-delay = 10
+log_dir = 'log'
+os.makedirs(log_dir, exist_ok = True)
+log_filename = f'{log_dir}/{timestamp}.json'
 
-#API call error handling
-while attempt < max_retry:
+#Configure logging messages
+
+logging.basicConfig(
+    filename = log_filename,
+    filemode = "a", # Append new logs to file by default, can be "w" to overwrite the file
+    format = "%(levelname)s:%(name)s:%(message)s", # format for content output in log file
+    level=logging.WARNING, # minimum serverity for log to be recorded in a log file
+)
+
+#Create the logger
+
+logger = logging.getLogger()
+
+logger.debug("This is a debug message")    
+logger.info("System working :)")            
+logger.warning("Something unexpected :(")        
+logger.error("An error occurred :'(")             
+logger.critical("Critical system error </3")
+
+
+
+try:
 
 
     #API Call and status response
@@ -53,9 +73,27 @@ while attempt < max_retry:
     if response.status_code == 200: 
         data = response.content
         print('Data retrieved successfully! :)')
+        logger.info("Data retrieved successfully")
+        logger.info("Saving data")
         with open(filename, 'wb') as file:
             file.write(data)
-        break
+        logger.info("Data Saved, W code")
+    elif response.status_code == 400:
+        print('File size to large, shorten time range and try again! :(')
+        logger.error(f"API Call Error '{response.status_code}: {response.text}, L code'")
+
+    elif response.status_code == 404:
+        print('No data available in time range, change time range and try again! :(')
+        logger.error(f"API Call Error '{response.status_code}: {response.text}, L code'")
+
+    elif response.status_code == 504:
+        print('Timeout, consider Amazon S3 destination and try again! :(')
+        logger.error(f"API Call Error '{response.status_code}: {response.text}, L code'")
     else:
         print(f'Error {response.status_code}')
-        break 
+        logger.error(f"API Call Error '{response.status_code}: {response.text}, L code'")
+except requests.exceptions.RequestException as e:
+    logger.error(f"API request failed: {e}")
+    print(f"Request failed: {e}")
+
+logger.info("Process Finished")
