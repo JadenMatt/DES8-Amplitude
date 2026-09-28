@@ -29,7 +29,6 @@ AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
 
 # View contents of s3 bucket
 
-
 session = boto3.Session( AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
 
 
@@ -39,6 +38,14 @@ my_bucket = s3.Bucket(AWS_BUCKET_NAME)
 
 for my_bucket_object in my_bucket.objects.all():
     print(my_bucket_object.key)
+
+# Get list of Local directory files
+
+JSON_List = os.listdir('data/JSON_data')
+for object in JSON_List:
+    print(object)
+
+
 
 # # Calling previous day
 
