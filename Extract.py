@@ -36,14 +36,30 @@ s3 = session.resource('s3')
 
 my_bucket = s3.Bucket(AWS_BUCKET_NAME)
 
+s3_file_list = []
+
 for my_bucket_object in my_bucket.objects.all():
-    print(my_bucket_object.key)
+  s3_file_list.append(my_bucket_object.key)
+  
 
 # Get list of Local directory files
+
+concat_file_list = ' '.join(s3_file_list)
+
+print(concat_file_list)
 
 JSON_List = os.listdir('data/JSON_data')
 for object in JSON_List:
     print(object)
+    print()
+    if concat_file_list.find(object) != -1:
+        print(f'{object} already in bucket')
+    else:
+        print('Object not in bucket')
+        
+
+
+# Comparison between paths
 
 
 
