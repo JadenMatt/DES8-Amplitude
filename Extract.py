@@ -20,6 +20,13 @@ load_dotenv()
 amp_api_key = os.getenv('AMP_API_KEY')
 amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
+
+# AWS Access Key Details
+
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
+
 # Calling previous day
 
 Previous_Day = datetime.now() - timedelta(days=1)
@@ -88,6 +95,8 @@ try:
         print('Data retrieved successfully! :)')
         logger.info("Data retrieved successfully")
         logger.info("Saving data")
+
+
 
 # Open gzip files inside extracted folder (handles nested sub-folders)
         for root, dirs, files in os.walk(temp_dir):
