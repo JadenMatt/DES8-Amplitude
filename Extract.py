@@ -20,12 +20,23 @@ load_dotenv()
 amp_api_key = os.getenv('AMP_API_KEY')
 amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
+
+# AWS Access Key Details
+
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
+
+
 # Calling previous day
 
 Previous_Day = datetime.now() - timedelta(days=1)
+starttime_hour = 00
+endtime_hour = 23
 
-starttime = Previous_Day.strftime('%Y%m%dT00')
-endtime = Previous_Day.strftime('%Y%m%dT23')
+starttime = Previous_Day.strftime(f'%Y%m%dT{starttime_hour}')
+endtime = Previous_Day.strftime(f'%Y%m%dT{endtime_hour}')
+
 
 url = 'https://analytics.eu.amplitude.com/api/2/export'
 
@@ -47,7 +58,7 @@ os.makedirs(json_dir, exist_ok=True)
 
 
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') # - Don't use / when creating a file name
-filename = f'{data_dir}/{timestamp}.zip' 
+zip_filename = f'{data_dir}/{timestamp}.zip' 
 
 #Create log folder
 
@@ -74,13 +85,32 @@ logger.warning("Something unexpected :(")
 logger.error("An error occurred :'(")             
 logger.critical("Critical system error </3")
 
+# session = boto3.Session( AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
 
 
+# s3 = session.resource('s3')
+
+# my_bucket = s3.Bucket(AWS_BUCKET_NAME)
+
+# s3_file_list = []
+
+# for my_bucket_object in my_bucket.objects.all():
+#   s3_file_list.append(my_bucket_object.key)
+  
+
+# # Get list of Local directory files
+
+# concat_file_list = ' '.join(s3_file_list)
+# JSON_List = os.listdir('data/JSON_data')
+
+# for object in JSON_List:
+#     if concat_file_list.find(object) != -1:
+#         print(f'{object} already in bucket')
+#     else:
 try:
 
 
-    #API Call and status response
-
+        #API Call and status response
     response = requests.get(url, params=params, auth=(amp_api_key, amp_secret_key))
 
     if response.status_code == 200: 
@@ -88,7 +118,10 @@ try:
         print('Data retrieved successfully! :)')
         logger.info("Data retrieved successfully")
         logger.info("Saving data")
-
+        with open(zip_filename, 'wb') as file:
+                file.write(data)
+        with zipfile.ZipFile(zip_filename, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
 # Open gzip files inside extracted folder (handles nested sub-folders)
         for root, dirs, files in os.walk(temp_dir):
             for file_name in files:
@@ -124,4 +157,3 @@ except requests.exceptions.RequestException as e:
     print(f"Request failed: {e}")
 
 logger.info("Process Finished")
-
