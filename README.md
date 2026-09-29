@@ -20,16 +20,20 @@ An automated pipeline to extract event data from the Amplitude Export API, decom
    ```bash
    pip install -r requirements.txt
    ```
+## .env setup
 
 # Amplitude API Credentials
 
 AMP_API_KEY="your_amplitude_api_key"
+
 AMP_SECRET_KEY="your_amplitude_secret_key"
 
 # AWS S3 Credentials
 
 AWS_ACCESS_KEY="your_aws_access_key"
+
 AWS_SECRET_ACCESS_KEY="your_aws_secret_key"
+
 AWS_BUCKET_NAME="your_s3_bucket_name"
 
 ## Authors
