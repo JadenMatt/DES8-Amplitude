@@ -22,13 +22,13 @@ An automated pipeline to extract event data from the Amplitude Export API, decom
    ```
 ## .env setup
 
-# Amplitude API Credentials
+### Amplitude API Credentials
 
 AMP_API_KEY="your_amplitude_api_key"
 
 AMP_SECRET_KEY="your_amplitude_secret_key"
 
-# AWS S3 Credentials
+### AWS S3 Credentials
 
 AWS_ACCESS_KEY="your_aws_access_key"
 
