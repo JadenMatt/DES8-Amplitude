@@ -4,6 +4,7 @@ from modules.extract_initialiser import extractor
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
+from modules.load_initialiser import load_to_s3
 
 timestamp = datetime.now().strftime('%Y-%m-%d %H-%M-%S') 
 
@@ -36,3 +37,14 @@ amp_api_key = os.getenv('AMP_API_KEY')
 amp_secret_key = os.getenv('AMP_SECRET_KEY')
 
 extractor(url, data_dir, temp_dir, json_dir, timestamp, amp_api_key, amp_secret_key, starttime, endtime, starttime_hour, endtime_hour)
+
+
+load_dotenv()
+
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
+
+files_to_upload = os.listdir('data/JSON_data')
+
+load_to_s3(files_to_upload, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_BUCKET_NAME)
