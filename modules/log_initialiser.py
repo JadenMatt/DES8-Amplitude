@@ -2,6 +2,13 @@ import os
 import logging
 
 def setup_log(log_dir:str, timestamp:str):
+    """ This function will initialise the logger.
+
+
+    Args:
+        log_dir (str): Where to store logs
+        timestamp (str): Timestamp will be the name of the log file
+    """
 
     #Create log folder
 
@@ -15,7 +22,7 @@ def setup_log(log_dir:str, timestamp:str):
         filename = log_filename,
         filemode = "a", # Append new logs to file by default, can be "w" to overwrite the file
         format = "%(levelname)s:%(name)s:%(message)s", # format for content output in log file
-        level=logging.warning, # minimum serverity for log to be recorded in a log file
+        level=logging.INFO, # minimum serverity for log to be recorded in a log file
     )
 
     #Create the logger
